@@ -17,6 +17,7 @@ namespace OctopusTools.Commands
         readonly IList<string> includes = new List<string>();
         readonly ILog log;
         readonly OptionSet options;
+        readonly IAspNetFilesPopulator aspNetFilesPopulator;
         string basePath;
         string description;
         string id;
@@ -26,10 +27,11 @@ namespace OctopusTools.Commands
         string title;
         SemanticVersion version;
 
-        public PackCommand(ILog log, IOctopusFileSystem fileSystem)
+        public PackCommand(ILog log, IAspNetFilesPopulator aspNetFilesPopulator, IOctopusFileSystem fileSystem)
         {
             this.log = log;
             this.fileSystem = fileSystem;
+            this.aspNetFilesPopulator = aspNetFilesPopulator;
 
             options = new OptionSet
             {
@@ -131,8 +133,15 @@ namespace OctopusTools.Commands
             log.InfoFormat("Packing {0} version {1}...", id, version);
 
             var package = new PackageBuilder();
-
-            package.PopulateFiles(basePath, includes.Select(i => new ManifestFile {Source = i}));
+            if (File.Exists(basePath + Path.DirectorySeparatorChar + "Global.asax") == false)
+            {
+                package.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
+            }
+            else
+            {
+                log.InfoFormat("Detected ASP.NET project, will pack using special convention (and ignore --include option)");
+                aspNetFilesPopulator.PopulatePackage(package, basePath);
+            }
             package.Populate(metadata);
 
             var filename = metadata.Id + "." + metadata.Version + ".nupkg";
@@ -150,5 +159,7 @@ namespace OctopusTools.Commands
 
             log.InfoFormat("Done.");
         }
+
     }
+
 }

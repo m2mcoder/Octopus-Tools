@@ -1,0 +1,2 @@
+These are not a standard Octopus-Tools binaries from https://github.com/OctopusDeploy/Octopus-Tools
+Those are cloned from the original repository to https://source.concep.com/Concep.Octopus-Tools and then patched to properly support ASP.NET packaging.

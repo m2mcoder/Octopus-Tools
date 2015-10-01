@@ -62,6 +62,8 @@ namespace OctopusTools
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
 
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
+            builder.RegisterType<AspNetFilesPopulator>().As<IAspNetFilesPopulator>();
+            builder.RegisterType<PathContentsGetter>().As<IPathContentsGetter>();
 
             return builder.Build();
         }
